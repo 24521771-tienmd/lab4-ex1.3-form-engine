@@ -189,10 +189,10 @@ Sprint 2 slide commits map to **T10** (*feat: form context*), **T14** (*feat: in
 
 ## Final Verification
 
-- [ ] `git log --oneline` shows T00–T22, one commit each.
-- [ ] `npm test`, `npm run lint`, `npm run build`, `git diff --check` pass.
-- [ ] `git grep -n "useEffect" src/forms` → no matches.
-- [ ] All Ex1.2 and Ex1.1 tests still present and green.
+- [x] `git log --oneline` shows T00–T22, one commit each.
+- [x] `npm test`, `npm run lint`, `npm run build`, `git diff --check` pass.
+- [x] `git grep -n "useEffect" src/forms` → no matches.
+- [x] All Ex1.2 and Ex1.1 tests still present and green.
 
 ## Decisions
 
