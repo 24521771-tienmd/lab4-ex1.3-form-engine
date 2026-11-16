@@ -121,7 +121,7 @@ Sprint 2 slide commits map to **T10** (*feat: form context*), **T14** (*feat: in
 - **Do:** implement per T04 — `useState` only, no `useEffect`, no `useMemo` unless a test proves the need; `setFieldValue` uses the functional updater `setValues(prev => ({ ...prev, [name]: value }))`.
 
 ### T13 · [2] Fail Test · `test(forms): add failing accessibility tests for InputField`
-- [ ] Done
+- [x] Done
 - **Files:** `src/forms/InputField.test.jsx`
 - **Assert** (inside a real `SimpleForm`):
   - `getByLabelText('Full name')` finds the input (label binding via `useId`); two `InputField`s get different ids;
