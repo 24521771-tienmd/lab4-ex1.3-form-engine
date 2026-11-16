@@ -107,7 +107,7 @@ Sprint 2 slide commits map to **T10** (*feat: form context*), **T14** (*feat: in
 - **Do:** `export const FormContext = createContext(null)`; `export function useFormContext()` per T04. JSDoc typedef of the context value.
 
 ### T11 · [2] Fail Test · `test(forms): add failing tests for SimpleForm derived validation`
-- [ ] Done
+- [x] Done
 - **Files:** `src/forms/SimpleForm.test.jsx`
 - **Assert** (use a tiny probe child reading context, plus a raw `<input>` bound via `setFieldValue`):
   - initial render: `errors` derived from `initialValues`, `isValid` false, no error UI shown;
