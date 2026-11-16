@@ -165,7 +165,7 @@ Sprint 2 slide commits map to **T10** (*feat: form context*), **T14** (*feat: in
 - **Do:** read every file in `src/forms/` (excluding `*.test.jsx`) and assert none contains `useEffect` or `useLayoutEffect`; also assert no file outside `src/legacy/` imports `legacy/` (except tests).
 
 ### T20 · [4] Refactor · `style(forms): add responsive accessible form styles`
-- [ ] Done
+- [x] Done
 - **Files:** `src/forms/forms.css`, `src/components/show-data.css`
 - **Do:** single-column fields at 375px, two-column at ≥ 768px; error text prefixed with a visible "Error:" label and an icon marked `aria-hidden` (not colour alone); `:focus-visible`; `[aria-invalid="true"]` border style; inspector `dl` grid.
 - **Done when:** all green. **Manual:** 375px no horizontal scroll.

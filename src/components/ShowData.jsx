@@ -1,4 +1,5 @@
 import { Fragment, useId } from 'react'
+import './show-data.css'
 
 /**
  * Semantic key–value inspector (docs/contracts/ex1.3-form-engine.md §5.3).

@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { FormContext } from './FormContext.js'
+import './forms.css'
 
 /**
  * Generic, Context-driven form engine (docs/contracts/ex1.3-form-engine.md §5.1).
@@ -44,10 +45,14 @@ export default function SimpleForm({ initialValues, validate, onValidSubmit, sub
   const contextValue = { values, errors, touched, submitAttempted, isValid, setFieldValue, markTouched }
 
   return (
-    <form noValidate onSubmit={handleSubmit}>
+    <form className="simple-form" noValidate onSubmit={handleSubmit}>
       <FormContext.Provider value={contextValue}>{children}</FormContext.Provider>
-      {submitAttempted && !isValid ? <p role="alert">Fix {errorCount} field(s) before submitting.</p> : null}
-      <button type="submit">{submitLabel}</button>
+      {submitAttempted && !isValid ? (
+        <p className="form-summary" role="alert">
+          Fix {errorCount} field(s) before submitting.
+        </p>
+      ) : null}
+      <button className="form-submit" type="submit">{submitLabel}</button>
     </form>
   )
 }

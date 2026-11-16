@@ -61,7 +61,13 @@ export default function InputField({ name, label, type = 'text', options, autoCo
       {hint ? <p className="field-hint">{hint}</p> : null}
       {showError ? (
         <p id={errorId} className="field-error">
-          {error}
+          {/* Not colour alone: visible "Error:" label; the icon is decorative. */}
+          <span className="field-error__icon" aria-hidden="true">
+            ⚠
+          </span>
+          <span>
+            <span className="field-error__label">Error:</span> {error}
+          </span>
         </p>
       ) : null}
     </div>
