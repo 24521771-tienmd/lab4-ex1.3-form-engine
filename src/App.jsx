@@ -9,6 +9,7 @@ import {
   loadNotFoundPage,
   loadPeopleLayout,
   loadPersonDetail,
+  loadRegisterPage,
 } from './routes/lazyRoutes.js'
 import './App.css'
 
@@ -18,6 +19,7 @@ const ArenaPage = lazy(loadArenaPage)
 const PeopleLayout = lazy(loadPeopleLayout)
 const NotFoundPage = lazy(loadNotFoundPage)
 const PersonDetail = lazy(loadPersonDetail)
+const RegisterPage = lazy(loadRegisterPage)
 
 export default function App() {
   return (
@@ -35,6 +37,7 @@ export default function App() {
             }
           />
         </Route>
+        <Route path="register" element={<RegisterPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Route>
     </Routes>

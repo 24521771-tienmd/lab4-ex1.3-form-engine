@@ -23,6 +23,11 @@ export default function AppLayout() {
                 People
               </NavLink>
             </li>
+            <li>
+              <NavLink to="/register" className={navLinkClassName}>
+                Register
+              </NavLink>
+            </li>
           </ul>
         </nav>
       </header>

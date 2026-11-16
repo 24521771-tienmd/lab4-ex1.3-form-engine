@@ -155,7 +155,7 @@ Sprint 2 slide commits map to **T10** (*feat: form context*), **T14** (*feat: in
   - filling valid data and submitting → `ShowData` shows `fullName`, `email`, `age`, `role` with the entered values.
 
 ### T18 · [3] Implement · `feat(register): add lazy /register route composing the form engine`
-- [ ] Done
+- [x] Done
 - **Files:** `src/pages/register/RegisterPage.jsx`, `src/routes/lazyRoutes.js` (`loadRegisterPage`), `src/App.jsx`, `src/layouts/AppLayout.jsx`
 - **Do:** `RegisterPage` keeps `submitted` state (`null` until a valid submit) → `<SimpleForm initialValues={{ fullName: '', email: '', age: '', role: '' }} validate={validateRegistration} onValidSubmit={setSubmitted}>` with four `InputField`s; renders `<ShowData data={submitted} />` when set. Route `register` is lazy with the `PageSkeleton` boundary. Add `NavLink` *Register*.
 
