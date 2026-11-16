@@ -116,7 +116,7 @@ Sprint 2 slide commits map to **T10** (*feat: form context*), **T14** (*feat: in
   - **render budget:** inside `<Profiler>`, typing one character produces **exactly 1** commit.
 
 ### T12 · [3] Implement · `feat(forms): add SimpleForm with synchronous derived validation`
-- [ ] Done
+- [x] Done
 - **Files:** `src/forms/SimpleForm.jsx`
 - **Do:** implement per T04 — `useState` only, no `useEffect`, no `useMemo` unless a test proves the need; `setFieldValue` uses the functional updater `setValues(prev => ({ ...prev, [name]: value }))`.
 
