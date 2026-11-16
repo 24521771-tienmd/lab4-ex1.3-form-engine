@@ -102,7 +102,7 @@ Sprint 2 slide commits map to **T10** (*feat: form context*), **T14** (*feat: in
 - **Assert:** a probe component using `useFormContext()` outside a provider throws the exact message; inside `<FormContext.Provider value={…}>` it receives that value.
 
 ### T10 · [3] Implement · `feat(forms): add form context provider contract and useFormContext hook`
-- [ ] Done
+- [x] Done
 - **Files:** `src/forms/FormContext.js`
 - **Do:** `export const FormContext = createContext(null)`; `export function useFormContext()` per T04. JSDoc typedef of the context value.
 
