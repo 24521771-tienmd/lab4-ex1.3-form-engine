@@ -146,7 +146,7 @@ Sprint 2 slide commits map to **T10** (*feat: form context*), **T14** (*feat: in
 - **Files:** `src/components/ShowData.jsx`
 
 ### T17 · [2] Fail Test · `test(register): add failing integration tests for registration route`
-- [ ] Done
+- [x] Done
 - **Files:** `src/pages/register/RegisterPage.test.jsx`
 - **Assert** (`MemoryRouter` at `/register`, deferred/real lazy as in Ex1.1 tests):
   - primary nav has a *Register* link that is active;
