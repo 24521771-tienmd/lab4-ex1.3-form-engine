@@ -160,7 +160,7 @@ Sprint 2 slide commits map to **T10** (*feat: form context*), **T14** (*feat: in
 - **Do:** `RegisterPage` keeps `submitted` state (`null` until a valid submit) → `<SimpleForm initialValues={{ fullName: '', email: '', age: '', role: '' }} validate={validateRegistration} onValidSubmit={setSubmitted}>` with four `InputField`s; renders `<ShowData data={submitted} />` when set. Route `register` is lazy with the `PageSkeleton` boundary. Add `NavLink` *Register*.
 
 ### T19 · ops · `test(forms): guard form engine against useEffect`
-- [ ] Done
+- [x] Done
 - **Files:** `tests/no-effect-in-forms.test.js` (`node:test`)
 - **Do:** read every file in `src/forms/` (excluding `*.test.jsx`) and assert none contains `useEffect` or `useLayoutEffect`; also assert no file outside `src/legacy/` imports `legacy/` (except tests).
 
