@@ -1,0 +1,124 @@
+/* Responsive master–detail "Case Dossier" grid (Ex1.2 · T17). */
+
+/*
+ * Dossier dimensions shared by PersonDetail and PersonDetailSkeleton (Ex1.1 · T07)
+ * so content and skeleton occupy the same box (CLS = 0).
+ * --dossier-row-height is `1lh`: one line of the row's own inherited font
+ * (line-height: normal), i.e. exactly the Ex1.2 row height in any font.
+ * --page-skeleton-min-height lives in src/index.css (global; Decision D5).
+ */
+:root {
+  --dossier-heading-font-size: clamp(1.5rem, 4vw, 2rem);
+  --dossier-heading-line-height: 1.2;
+  --dossier-heading-height: calc(
+    var(--dossier-heading-font-size) * var(--dossier-heading-line-height)
+  );
+  --dossier-row-height: 1lh;
+  --dossier-row-gap: 0.5rem;
+  --dossier-panel-padding: clamp(1rem, 4vw, 1.5rem);
+}
+
+.people-frame {
+  display: grid;
+  grid-template-columns: minmax(280px, 1fr) 2fr;
+  gap: clamp(1rem, 3vw, 2rem);
+  align-items: start;
+  min-width: 0;
+}
+
+.people-frame nav ul {
+  display: grid;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.people-frame .link,
+.people-frame .active-link {
+  display: block;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--color-border);
+  border-left: 4px solid transparent;
+  border-radius: 0.5rem;
+  color: var(--color-text);
+  background: #ffffff;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+  text-decoration: none;
+  transition: background-color 150ms ease, border-color 150ms ease;
+}
+
+.people-frame .link:hover {
+  background: #edf1ef;
+}
+
+/* Active state is not colour-only: heavier weight + thick left border. */
+.people-frame .active-link {
+  border-left-color: var(--color-accent);
+  background: #edf1ef;
+  font-weight: 700;
+}
+
+.people-frame .link:focus-visible,
+.people-frame .active-link:focus-visible {
+  outline: 3px solid #8a3c00;
+  outline-offset: 2px;
+}
+
+.content-area {
+  min-width: 0;
+  padding: var(--dossier-panel-padding);
+  border: 1px solid var(--color-border);
+  border-radius: 0.75rem;
+  background: #ffffff;
+}
+
+.content-area h2 {
+  min-height: var(--dossier-heading-height);
+  margin: 0 0 1rem;
+  font-size: var(--dossier-heading-font-size);
+  line-height: var(--dossier-heading-line-height);
+  overflow-wrap: anywhere;
+}
+
+.content-area p {
+  margin: 0 0 0.75rem;
+  line-height: 1.5;
+}
+
+.person-details {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: var(--dossier-row-gap) 1.25rem;
+  margin: 0;
+}
+
+.person-details dt,
+.person-details dd {
+  min-height: var(--dossier-row-height);
+}
+
+.person-details dt {
+  color: var(--color-muted);
+  font-weight: 700;
+}
+
+.person-details dd {
+  min-width: 0;
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 640px) {
+  .people-frame {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .people-frame .link,
+  .people-frame .active-link {
+    transition: none;
+  }
+}
