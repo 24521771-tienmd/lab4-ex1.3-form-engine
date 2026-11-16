@@ -1,6 +1,6 @@
-# CLAUDE.md — Working Agreement for Claude Code (Lab 4 · Ex1.1)
+# CLAUDE.md — Working Agreement for Claude Code (Lab 4 · Ex1.3)
 
-You are assisting a student on **Lab 4 Exercise 1.1**. The student is accountable for every line; you generate, they verify.
+You are assisting a student on **Lab 4 Exercise 1.3**. The student is accountable for every line; you generate, they verify.
 
 ## Read first, every session
 

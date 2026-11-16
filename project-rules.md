@@ -1,7 +1,7 @@
-# Project Rules — Lab 4 · Exercise 1.1
+# Project Rules — Lab 4 · Exercise 1.3
 
 > UIT S3T · Lab 4: Multi-Route SPA Architecture, Context Form Engine & Full-Stack React 19 Systems
-> Repository: `Week4/Ex1.1` — an independent Git repository for Exercise 1.1 only.
+> Repository: `Week4/Ex1.3` — an independent Git repository for Exercise 1.3 only.
 
 These rules are binding for every human and AI contribution to this repository (Claude Code, Copilot, ChatGPT, etc.).
 `TASK_DECOMPOSITION.md` is the work plan; this file is the law the plan must obey.
@@ -17,28 +17,39 @@ Lab 4 exercises are built cumulatively. Each exercise starts from a snapshot of 
 Lab 3 HW3 (KRAFTON x PUBG Vietnam Arena)  →  Ex1.2  →  Ex1.1  →  Ex1.3  →  Ex1.7.1
 ```
 
-- This repository starts from: **the finished `Week4/Ex1.2` repository** (imported as the first `chore` baseline commit).
+- This repository starts from: **the finished `Week4/Ex1.1` repository** (imported as the first `chore` baseline commit).
 - Every exercise folder is its **own Git repository** with its own remote.
 - Never push to, commit in, or modify the Lab 3 HW3 repository or any sibling `Week4/Ex*` folder.
 - The only sibling path an AI assistant may *read* is `../_lab4-kit/` (rules, plans, prompts).
 - Previous plans are archived under `docs/history/` and are reference-only.
 
-## 2. Current Exercise Scope — Ex1.1
+## 2. Current Exercise Scope — Ex1.3
 
-Exercise **1.1** (Lab 4 slide 9): *Performance and resiliency upgrades — route-level code splitting with `React.lazy`, `<Suspense>` boundaries, dimension-matched skeletons (CLS = 0), and accessible loading states.*
+Exercise **1.3 + Synchronous Form Validation Engine + In-Class Sprint 2** (Lab 4 slides 13–15): *Deconstruct the legacy 5-`useEffect` validation waterfall, then build a Context-driven, single-render-pass multi-field form engine with a live `<ShowData />` inspector.*
 
-Starting point: the finished Ex1.2 repository (router v7, `PeopleLayout`, `PersonDetail`, `ArenaPage`, `NotFoundPage`). All Ex1.2 behaviour and tests must keep passing.
+Starting point: the finished Ex1.1 repository (router v7 + lazy routes + skeletons). All previous behaviour and tests must keep passing.
 
 Deliverables:
 
-1. A reusable `Skeleton` primitive exposing `aria-busy="true"` and `aria-live="polite"`, with visually-hidden loading text and `aria-hidden` decorative shapes.
-2. Dimension-matched skeleton variants: `PersonDetailSkeleton` (mirrors the `<dl>` rows of `PersonDetail`) and `PageSkeleton` (route-level fallback). Shared CSS custom properties guarantee identical box sizes → CLS = 0.
-3. `PersonDetail` loaded with `React.lazy(() => import(...))` and wrapped in `<Suspense fallback={<PersonDetailSkeleton />}>` in its route element (slide 9 contract).
-4. Route-level chunking for `ArenaPage`, `PeopleLayout`, and `NotFoundPage`, with a `<Suspense>` boundary scoped around `AppLayout`'s `<Outlet />` so the header and navigation never disappear while a chunk loads.
-5. Intent-based preloading: hovering or focusing a person link starts downloading the `PersonDetail` chunk.
-6. Evidence: separate chunks in `npm run build` output and a CLS = 0 measurement, recorded in `docs/verification/`.
+1. **Legacy reproduction (evidence only)** — `src/legacy/LegacySimpleForm.jsx` reproduces the slide-13 cascade (InputField local state → `syncToParent` → `validateField` → `calcFormValidity` → `syncErrorsToChild` → `autoScrollToError`). It is never routed or imported by app code. A test measures its commits per keystroke.
+2. `validateRegistration(values)` — pure, synchronous rules for the registration form.
+3. `FormContext` + `useFormContext()` (throws a clear error outside a provider).
+4. `SimpleForm` — owns `values`, `touched`, `submitAttempted`; computes `errors = validate(values)` and `isValid` **during render**; provides them through `FormContext.Provider`. Generic: receives `initialValues`, `validate`, `onValidSubmit`, `submitLabel`, `children`.
+5. `InputField` — reads context; `useId()` per field; `<label htmlFor>`; `aria-invalid`; `aria-describedby` → error id; supports text/email/number inputs and `<select>` via an `options` prop.
+6. `ShowData` — semantic `<dl>` key–value inspector rendered after a valid submit.
+7. `RegisterPage` at route `/register` (lazy, consistent with Ex1.1), linked from the primary nav.
+8. Proof of the architecture: a `<Profiler>` test shows **exactly 1 commit per keystroke** for `SimpleForm`, and a static guard test proves `src/forms/**` contains no `useEffect`.
 
-Out of scope: forms (Ex1.3), data fetching/backend (Ex1.7.1), error-boundary class components (banned).
+Registration form contract:
+
+| Field | Control | Rule → error message |
+|---|---|---|
+| `fullName` | text | required, 2–50 chars after trim → "Full name must be 2–50 characters." |
+| `email` | email | required, matches `/^[^\s@]+@[^\s@]+\.[^\s@]+$/` → "Enter a valid email address." |
+| `age` | number (`valueAsNumber`) | integer 16–100; empty → "Age is required."; otherwise → "Age must be a whole number from 16 to 100." |
+| `role` | select from `PERSON_ROLES` | required, must be one of the roles → "Choose a role." |
+
+Out of scope: persisting registrations, adding them to the people list, backend (Ex1.7.1).
 
 Anything not listed in this section or in `TASK_DECOMPOSITION.md` is **out of scope**. Do not add features, dependencies, or refactors "while you are there".
 
@@ -124,6 +135,17 @@ RED commit policy:
 - Every `lazy` component renders inside a `<Suspense>` whose fallback is a dimension-matched skeleton — never `null`, never a spinner that changes layout.
 - Suspense boundaries are scoped so persistent chrome (header, nav, sidebar) stays mounted while a chunk loads.
 - Skeletons expose `aria-busy="true"` + `aria-live="polite"`, contain visually-hidden loading text, and mark decorative shapes `aria-hidden="true"`. Shimmer animation is disabled under `prefers-reduced-motion: reduce`.
+
+### 7.2 Form Engine Standards (from Ex1.3)
+
+- **Zero `useEffect` in `src/forms/**`.** Errors and validity are derived during render from `values` with a pure `validate` function.
+- One keystroke → one `setValues` call → exactly one React commit (verified with `<Profiler>` in tests).
+- Validation functions are pure: same input → same output, no I/O, no mutation; they return an object containing only failing fields.
+- Errors are shown when a field is touched (blur) or after a submit attempt — derived, not stored.
+- `InputField` gets its own `useId()`; error elements get `${id}-error` and are linked through `aria-describedby` only while an error is visible.
+- Number inputs read `e.target.valueAsNumber`; an empty number input is stored as `''`, never `NaN`.
+- Context consumers use `useFormContext()`, which throws `"useFormContext must be used inside <SimpleForm>"` outside a provider.
+- `src/legacy/**` holds anti-pattern reproductions for evidence only: never imported by app code, never routed, excluded from the no-`useEffect` guard.
 
 ## 8. Accessibility and Responsive Design
 
