@@ -171,7 +171,7 @@ Sprint 2 slide commits map to **T10** (*feat: form context*), **T14** (*feat: in
 - **Done when:** all green. **Manual:** 375px no horizontal scroll.
 
 ### T21 · ops · `docs(verification): record render-pass comparison and form a11y checks`
-- [ ] Done
+- [x] Done
 - **Files:** `docs/verification/ex1.3-form-engine.md`
 - **Do:** Claude records the legacy commit count printed by T06 vs the 1-commit assertion of T11. The **student** adds:
   1. React DevTools **Profiler** recording of one keystroke in `/register` → 1 commit (screenshot description / numbers).
