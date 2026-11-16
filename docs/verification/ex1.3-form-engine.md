@@ -54,7 +54,7 @@ The student ran the app (`npm run dev` → `/register`) and confirmed on 2026-11
 | 4 | Keyboard-only run-through | Tab reaches every field and *Submit* with a visible focus ring; submit via Enter; summary alert announced | Confirmed by student |
 | 5 | 375px viewport (T20 manual) | No horizontal scroll; one column; two columns at ≥ 768px | Confirmed by student |
 | 6 | Errors not by colour alone | Thick border + ⚠ + visible "Error:" text | Confirmed by student |
-| 7 | Lighthouse Accessibility | Target 100 | Confirmed by student (numeric score not recorded) |
+| 7 | Lighthouse on `/register` | Accessibility target 100 | **Accessibility 100**, **Performance 99** (reported by student) |
 
 ## 4. Conclusion
 
