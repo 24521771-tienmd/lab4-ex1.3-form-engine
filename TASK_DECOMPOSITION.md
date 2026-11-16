@@ -132,7 +132,7 @@ Sprint 2 slide commits map to **T10** (*feat: form context*), **T14** (*feat: in
   - `options` renders a `<select>` with a placeholder option and the given options.
 
 ### T14 · [3] Implement · `feat(forms): add InputField validation with useId and aria bindings`
-- [ ] Done
+- [x] Done
 - **Files:** `src/forms/InputField.jsx`
 - **Do:** implement per T04; `onChange` → `setFieldValue`, `onBlur` → `markTouched`; error text in `<p id={errorId} className="field-error">`.
 
