@@ -1,28 +1,31 @@
-# Lab 4 · Ex1.1 — KRAFTON x PUBG Vietnam Arena: Code Splitting, Suspense & Skeletons
+# Lab 4 · Ex1.3 — KRAFTON x PUBG Vietnam Arena: Synchronous Context Form Engine
 
-Lab 4 Exercise 1.1 (slide 9): performance and resiliency upgrades on top of the finished Ex1.2 multi-route SPA — **route-level code splitting** with `React.lazy`, **`<Suspense>` boundaries** scoped so the header and navigation never disappear, **dimension-matched, accessible skeletons** (CLS = 0), and **intent-based preloading** of the player-dossier chunk.
+Lab 4 Exercise 1.3 + In-Class Sprint 2 (slides 13–15): deconstruct the legacy **5-`useEffect` validation waterfall**, then replace it with a **Context-driven form engine** that derives errors and validity **during render** — one keystroke, one React commit — with accessible fields (`useId`, `aria-invalid`, `aria-describedby`) and a semantic `<ShowData />` inspector, served at the new lazy route **`/register`**.
 
-All Ex1.2 behaviour (React Router v7 routes, active `NavLink`s, responsive master–detail *Case Dossier*) is unchanged. The project is a frontend-only prototype; it is not connected to an official competition service.
+All Ex1.1 behaviour (lazy routes, Suspense boundaries, skeletons, preloading) and all Ex1.2 behaviour (React Router v7 routes, *Case Dossier*) is unchanged. The project is a frontend-only prototype; it is not connected to an official competition service, and registrations are not persisted.
 
 ## Lineage
 
 ```
-Lab 3 HW3 (KRAFTON x PUBG Vietnam Arena)  →  Ex1.2  →  Ex1.1 (this repository)
+Lab 3 HW3 (KRAFTON x PUBG Vietnam Arena)  →  Ex1.2  →  Ex1.1  →  Ex1.3 (this repository)  →  Ex1.7.1
 ```
 
 - **Lab 3 HW3** — single-view PUBG Vietnam Arena. Rules, plan and AI audit archived in [`docs/history/lab3-hw3/`](./docs/history/lab3-hw3/).
 - **Ex1.2** — React Router v7 multi-route SPA with `AppLayout`, `PeopleLayout` and `PersonDetail`. This repository starts from a snapshot of the finished Ex1.2 repository (commit `chore: import Ex1.2 baseline`); its plan, AI audit and DevTools checkpoints are archived in [`docs/history/ex1.2/`](./docs/history/ex1.2/). Its routing contract [`docs/contracts/ex1.2-routing.md`](./docs/contracts/ex1.2-routing.md) still applies.
-- **Ex1.1** — this repository: code splitting, Suspense boundaries, skeletons and preloading.
+- **Ex1.1** — code splitting, Suspense boundaries, skeletons and preloading. This repository starts from a snapshot of the finished Ex1.1 repository (commit `chore: import Ex1.1 baseline`); its plan, AI audit and performance record are archived in [`docs/history/ex1.1/`](./docs/history/ex1.1/). Its contract [`docs/contracts/ex1.1-lazy-loading.md`](./docs/contracts/ex1.1-lazy-loading.md) still applies.
+- **Ex1.3** — this repository: legacy waterfall reproduction, synchronous form engine and `/register`.
+- **Ex1.7.1** (next) — reuses the generic `SimpleForm` with a shared validator for client/server parity (decision D1).
 
 ## Routes
 
 | Path | Element | Chunk | What it shows |
 |---|---|---|---|
-| `/` | `AppLayout` | entry | Layout route: header with the *Primary* navigation (`Arena`, `People`), the single `<main>` with the route-level `<Suspense>` around `<Outlet />`, footer |
+| `/` | `AppLayout` | entry | Layout route: header with the *Primary* navigation (`Arena`, `People`, `Register`), the single `<main>` with the route-level `<Suspense>` around `<Outlet />`, footer |
 | `/` (index) | `ArenaPage` | **lazy** | The Lab 3 HW3 arena screen, unchanged |
 | `/people` | `PeopleLayout` | **lazy** | *Player dossiers* sidebar of `NavLink`s (with chunk preloading) + nested `<Outlet />` |
 | `/people` (index) | `PeopleIndex` | entry | "Select a player dossier." prompt |
 | `/people/:id` | `PersonDetail` | **lazy** | Name and role in a `<dl>`, behind its own `<Suspense>`; unknown ids (e.g. `/people/p-999`, `/people/3`) show a `404: Person Not Found` alert with a *Back to dossiers* link |
+| `/register` | `RegisterPage` | **lazy** | *Player registration* form (`SimpleForm` + four `InputField`s); after a valid submit, the `ShowData` inspector lists the submitted values (Ex1.3) |
 | `*` | `NotFoundPage` | **lazy** | *Page not found* with a link back to the Arena |
 
 - `src/main.jsx` mounts `<StrictMode><BrowserRouter><App /></BrowserRouter></StrictMode>`; `src/App.jsx` only declares `<Routes>`, so tests wrap it in `<MemoryRouter>`.
@@ -30,13 +33,90 @@ Lab 3 HW3 (KRAFTON x PUBG Vietnam Arena)  →  Ex1.2  →  Ex1.1 (this repositor
 - Active links use `className={({ isActive }) => isActive ? 'active-link' : 'link'}` and receive `aria-current="page"`; the active state is shown with weight and a bar, not colour alone.
 - The `/people` view is a CSS Grid (`minmax(280px, 1fr) 2fr`) that collapses to one column at ≤ 640px.
 
+## Form engine architecture (Ex1.3)
+
+Full contract: [`docs/contracts/ex1.3-form-engine.md`](./docs/contracts/ex1.3-form-engine.md). Evidence: [`docs/verification/ex1.3-form-engine.md`](./docs/verification/ex1.3-form-engine.md).
+
+### Before: the slide-13 waterfall (evidence only)
+
+[`src/legacy/LegacySimpleForm.jsx`](./src/legacy/LegacySimpleForm.jsx) reproduces the anti-pattern — derived data copied into state by chained effects. It is bounded (every `setState` has an equality guard), never routed, and never imported by app code.
+
+```
+keystroke
+  └─ LegacyInputField setValue ............................ commit 1
+       └─ effect #1 syncToParent     → setValues .......... commit 2
+            └─ effect #2 validateField → setErrors ........ commit 3
+                 ├─ effect #3 calcFormValidity  → setIsValid   ┐
+                 └─ effect #4 syncErrorsToChild → setChildError┘ commit 4
+                      └─ effect #5 autoScrollToError → scrollIntoView?.()
+```
+
+Measured by a `<Profiler>` test (`src/legacy/LegacySimpleForm.test.jsx`): **4 commits** for one keystroke that flips a field from invalid to valid.
+
+### After: single render pass
+
+```
+keystroke
+  └─ InputField onChange → setFieldValue → setValues ...... commit 1 (only)
+       └─ SimpleForm render:
+            errors  = validate(values)          ← pure, synchronous
+            isValid = Object.keys(errors).length === 0
+            <FormContext.Provider value={…}>    ← every InputField reads it
+```
+
+Asserted by a `<Profiler>` test (`src/forms/SimpleForm.test.jsx`): **exactly 1 commit** per keystroke. A static guard (`tests/no-effect-in-forms.test.js`) fails if `useEffect`/`useLayoutEffect` ever appears in `src/forms/`, or if app code imports `legacy/`.
+
+### Modules
+
+| Module | Role |
+|---|---|
+| [`src/forms/validateRegistration.js`](./src/forms/validateRegistration.js) | Pure rules → `{ [field]: message }` for failing fields only |
+| [`src/forms/FormContext.js`](./src/forms/FormContext.js) | `FormContext` + `useFormContext()` (throws `useFormContext must be used inside <SimpleForm>` outside a provider) |
+| [`src/forms/SimpleForm.jsx`](./src/forms/SimpleForm.jsx) | Generic engine: `SimpleForm({ initialValues, validate, onValidSubmit, submitLabel = 'Submit', children })` |
+| [`src/forms/InputField.jsx`](./src/forms/InputField.jsx) | `InputField({ name, label, type = 'text', options, autoComplete, inputMode, hint })` — `<input>` or `<select>` |
+| [`src/components/ShowData.jsx`](./src/components/ShowData.jsx) | `ShowData({ data, title = 'Submitted data' })` — `<section>` + `<h2>` + `<dl class="json-inspector">` |
+| [`src/pages/register/RegisterPage.jsx`](./src/pages/register/RegisterPage.jsx) | Route `/register`; holds only `submitted` |
+
+### Context value contract
+
+```js
+{
+  values,           // state — current field values
+  errors,           // derived — validate(values), never stored
+  touched,          // state — { [field]: true } after blur
+  submitAttempted,  // state — true after the first submit
+  isValid,          // derived — Object.keys(errors).length === 0
+  setFieldValue(name, value),  // setValues(prev => ({ ...prev, [name]: value }))
+  markTouched(name),
+}
+```
+
+- An error is shown when `errors[name] && (touched[name] || submitAttempted)` — derived, not stored.
+- The submit button stays enabled; an invalid submit reveals every error plus a `role="alert"` summary *Fix N field(s) before submitting.* (decision D2).
+
+### Registration form (`/register`)
+
+| Field | Control | Error message |
+|---|---|---|
+| `fullName` | text, 2–50 chars after trim | Full name must be 2–50 characters. |
+| `email` | email, `/^[^\s@]+@[^\s@]+\.[^\s@]+$/` | Enter a valid email address. |
+| `age` | number via `valueAsNumber` (empty → `''`, never `NaN`), integer 16–100 | Age is required. / Age must be a whole number from 16 to 100. |
+| `role` | `<select>` from `PERSON_ROLES` | Choose a role. |
+
+### Accessibility
+
+- Each `InputField` calls its own `useId()` (decision D4) → `<label htmlFor>`, and an error element `${id}-error` linked through `aria-describedby` **only while it is visible**; `aria-invalid` mirrors the visible error.
+- Errors never rely on colour alone: thicker border, a decorative ⚠ (`aria-hidden`), and a visible **Error:** label.
+- One column at 375px, two columns from 768px; `:focus-visible` outlines; the inspector `dl` wraps long values instead of overflowing.
+- `ShowData` renders values as JSX text, so untrusted input such as `<img src=x onerror=…>` is displayed literally.
+
 ## Code-splitting architecture (Ex1.1)
 
 Full contract: [`docs/contracts/ex1.1-lazy-loading.md`](./docs/contracts/ex1.1-lazy-loading.md).
 
 ### Chunk map
 
-Production build (`npm run build`, recorded in [`docs/verification/ex1.1-performance.md`](./docs/verification/ex1.1-performance.md)):
+Production build as recorded for Ex1.1 in [`docs/history/ex1.1/ex1.1-performance.md`](./docs/history/ex1.1/ex1.1-performance.md). Ex1.3 adds a lazy `RegisterPage-*.js` (3.67 kB, 1.63 kB gzip) + `RegisterPage-*.css` (1.79 kB) chunk; see [`docs/verification/ex1.3-form-engine.md`](./docs/verification/ex1.3-form-engine.md).
 
 | Chunk | Contents | Size (gzip) |
 |---|---|---|
@@ -50,8 +130,8 @@ Before splitting, the app shipped one 277.18 kB (87.37 kB gzip) bundle; the entr
 
 ### Loaders and `lazy()`
 
-- [`src/routes/lazyRoutes.js`](./src/routes/lazyRoutes.js) exports `loadArenaPage`, `loadPeopleLayout`, `loadNotFoundPage` and `loadPersonDetail`, each `() => import('…')`.
-- [`src/App.jsx`](./src/App.jsx) declares the four lazy components **at module top level** (`const PersonDetail = lazy(loadPersonDetail)`), never inside a component body.
+- [`src/routes/lazyRoutes.js`](./src/routes/lazyRoutes.js) exports `loadArenaPage`, `loadPeopleLayout`, `loadNotFoundPage`, `loadPersonDetail` and (Ex1.3) `loadRegisterPage`, each `() => import('…')`.
+- [`src/App.jsx`](./src/App.jsx) declares the five lazy components **at module top level** (`const PersonDetail = lazy(loadPersonDetail)`), never inside a component body.
 - Keeping loaders separate from `lazy()` lets the same `import()` be reused for preloading and replaced by deferred mocks in tests.
 
 ### Suspense boundaries
@@ -60,7 +140,7 @@ Before splitting, the app shipped one 277.18 kB (87.37 kB gzip) bundle; the entr
 <header> + <nav aria-label="Primary">      ← always mounted
 <main>
   <Suspense fallback={<PageSkeleton />}>   ← AppLayout: around <Outlet /> only
-    ArenaPage | NotFoundPage | PeopleLayout
+    ArenaPage | RegisterPage | NotFoundPage | PeopleLayout
       <nav aria-label="Player dossiers">  ← stays mounted while a dossier loads
       <Suspense fallback={<PersonDetailSkeleton />}>   ← :id route element
         PersonDetail
@@ -92,6 +172,12 @@ There is **no error boundary for chunk-load failures** (contract Decision D1): R
 
 ## Main features
 
+Form engine (Ex1.3):
+
+- `/register` *Player registration* form with live, synchronous validation and a `ShowData` inspector.
+- 1 commit per keystroke (vs 4 in the legacy waterfall), proven by `<Profiler>` tests.
+- Accessible fields: `useId` label binding, `aria-invalid`, `aria-describedby`, error text not by colour alone.
+
 Performance & resiliency (Ex1.1):
 
 - Route-level code splitting with four lazy chunks and scoped Suspense boundaries.
@@ -113,7 +199,7 @@ Arena (from Lab 3 HW3, unchanged):
 
 ## Technology stack
 
-- React and React DOM 19 (`lazy`, `Suspense`)
+- React and React DOM 19 (`lazy`, `Suspense`, `createContext`, `useId`, `Profiler` in tests)
 - React Router 7 (`react-router`, declarative mode)
 - JavaScript and JSX with Vite 8
 - Node.js built-in test runner (`node:test`) for pure logic and source/CSS contract guards
@@ -159,15 +245,19 @@ The dev server serves every module separately, so chunk splitting and Lighthouse
 - The 15-minute countdown is independent of the drop phase and restarts when the page reloads.
 - No live server synchronization or official competition data is claimed.
 - No chunk-load error boundary (see *Known limitation*).
+- Registrations are shown in the inspector only; they are not saved or added to the people list (backend arrives in Ex1.7.1).
 
 ## Related documentation
 
 - [Project rules](./project-rules.md)
 - [Claude Code working agreement](./CLAUDE.md)
-- [Task decomposition (Ex1.1)](./TASK_DECOMPOSITION.md)
-- [AI failure audit (Ex1.1)](./AI_FAILURE_AUDIT.md)
+- [Task decomposition (Ex1.3)](./TASK_DECOMPOSITION.md)
+- [AI failure audit (Ex1.3)](./AI_FAILURE_AUDIT.md)
+- [Form engine and registration contract (Ex1.3)](./docs/contracts/ex1.3-form-engine.md)
+- [Form engine verification: render passes and a11y (Ex1.3)](./docs/verification/ex1.3-form-engine.md)
+- [Legacy waterfall reproduction (Ex1.3, evidence only)](./src/legacy/README.md)
 - [Lazy routes and skeleton contract (Ex1.1)](./docs/contracts/ex1.1-lazy-loading.md)
 - [Routing and dossier contract (Ex1.2)](./docs/contracts/ex1.2-routing.md)
-- [Performance verification: chunk split and CLS (Ex1.1)](./docs/verification/ex1.1-performance.md)
+- [Ex1.1 archive (plan, audit, performance record)](./docs/history/ex1.1/)
 - [Ex1.2 archive](./docs/history/ex1.2/)
 - [Lab 3 HW3 archive](./docs/history/lab3-hw3/)

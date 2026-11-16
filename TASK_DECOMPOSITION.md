@@ -181,7 +181,7 @@ Sprint 2 slide commits map to **T10** (*feat: form context*), **T14** (*feat: in
   5. Real summaries of `npm test`, `npm run lint`, `npm run build`.
 
 ### T22 · ops · `docs(readme): document Ex1.3 form engine architecture`
-- [ ] Done
+- [x] Done
 - **Files:** `README.md`
 - **Do:** explain the waterfall vs single-pass architecture (diagram in Markdown/ASCII), the context value contract, route `/register`, and lineage (HW3 → Ex1.2 → Ex1.1 → Ex1.3).
 
