@@ -58,7 +58,7 @@ Sprint 2 slide commits map to **T10** (*feat: form context*), **T14** (*feat: in
 - **Do:** copy `TASK_DECOMPOSITION.md`, `AI_FAILURE_AUDIT.md` from `../_lab4-kit/Ex1.3/`; tick T01–T03.
 
 ### T04 · [1] Contract · `docs(contract): define form engine and registration contracts`
-- [ ] Done
+- [x] Done
 - **Files:** `docs/contracts/ex1.3-form-engine.md`
 - **Content:**
   - `validate(values) → errors` — pure; returns `{ [field]: message }` for failing fields only.
