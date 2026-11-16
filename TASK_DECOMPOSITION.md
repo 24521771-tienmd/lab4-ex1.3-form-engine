@@ -92,7 +92,7 @@ Sprint 2 slide commits map to **T10** (*feat: form context*), **T14** (*feat: in
 - **Assert:** a fully valid object → `{}`; boundary cases — `fullName` 1/2/50/51 chars and whitespace-only; `email` missing `@`/domain; `age` `''`, 15, 16, 100, 101, 20.5; `role` `''` and a role outside `PERSON_ROLES`; exact error messages from the field table; the input object is not mutated.
 
 ### T08 · [3] Implement · `feat(forms): implement pure validateRegistration rules`
-- [ ] Done
+- [x] Done
 - **Files:** `src/forms/validateRegistration.js`
 - **Do:** import `PERSON_ROLES` from `src/data/people.js`; no React imports.
 
