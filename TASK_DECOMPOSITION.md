@@ -142,7 +142,7 @@ Sprint 2 slide commits map to **T10** (*feat: form context*), **T14** (*feat: in
 - **Assert:** heading *Submitted data* (or custom `title`); a `dl` with one `dt`/`dd` pair per key, in insertion order; numbers and booleans rendered as text; untrusted strings such as `<img src=x onerror=alert(1)>` render as literal text (no element created).
 
 ### T16 · [3] Implement · `feat(inspector): add semantic ShowData inspector output`
-- [ ] Done
+- [x] Done
 - **Files:** `src/components/ShowData.jsx`
 
 ### T17 · [2] Fail Test · `test(register): add failing integration tests for registration route`
