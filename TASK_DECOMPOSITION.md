@@ -72,7 +72,7 @@ Sprint 2 slide commits map to **T10** (*feat: form context*), **T14** (*feat: in
   - **Decision D1:** `SimpleForm` is generic (`validate` prop) so Ex1.7.1 can reuse it with `validateMessage`.
 
 ### T05 · ops · `chore(legacy): reproduce slide-13 useEffect validation waterfall`
-- [ ] Done
+- [x] Done
 - **Files:** `src/legacy/LegacySimpleForm.jsx`, `src/legacy/README.md`
 - **Do:** faithful but **bounded** reproduction of the slide-13 trace:
   - `LegacyInputField` keeps local `value` state; **effect #1** `syncToParent` calls `onValueChange(value)`.
