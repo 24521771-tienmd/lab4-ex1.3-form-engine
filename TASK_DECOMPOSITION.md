@@ -97,7 +97,7 @@ Sprint 2 slide commits map to **T10** (*feat: form context*), **T14** (*feat: in
 - **Do:** import `PERSON_ROLES` from `src/data/people.js`; no React imports.
 
 ### T09 · [2] Fail Test · `test(forms): add failing tests for FormContext and useFormContext`
-- [ ] Done
+- [x] Done
 - **Files:** `src/forms/FormContext.test.jsx`
 - **Assert:** a probe component using `useFormContext()` outside a provider throws the exact message; inside `<FormContext.Provider value={…}>` it receives that value.
 
