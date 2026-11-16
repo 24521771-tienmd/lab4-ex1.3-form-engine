@@ -87,7 +87,7 @@ Sprint 2 slide commits map to **T10** (*feat: form context*), **T14** (*feat: in
 - **Do:** wrap `LegacySimpleForm` in `<Profiler id="legacy" onRender={…}>`. Type a prefix that is still invalid (e.g. `ab`), **reset the counter**, then type **one** character that flips the field from invalid to valid (`c`) — the waterfall only fully cascades when the error actually changes. Assert `commits >= 3` and log the exact number with `console.info` (recorded in T21). Characterisation test: GREEN. *(Kit smoke test measured 4 commits for this keystroke vs 1 for the derived engine.)*
 
 ### T07 · [2] Fail Test · `test(forms): add failing tests for validateRegistration rules`
-- [ ] Done
+- [x] Done
 - **Files:** `tests/validateRegistration.test.js` (`node:test`)
 - **Assert:** a fully valid object → `{}`; boundary cases — `fullName` 1/2/50/51 chars and whitespace-only; `email` missing `@`/domain; `age` `''`, 15, 16, 100, 101, 20.5; `role` `''` and a role outside `PERSON_ROLES`; exact error messages from the field table; the input object is not mutated.
 
