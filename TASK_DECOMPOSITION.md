@@ -82,7 +82,7 @@ Sprint 2 slide commits map to **T10** (*feat: form context*), **T14** (*feat: in
 - **Done when:** lint/build pass; nothing under `src/` outside `src/legacy/` imports it (`git grep -n "legacy/" src` shows only tests).
 
 ### T06 · ops · `test(legacy): measure render cascade of the legacy waterfall`
-- [ ] Done
+- [x] Done
 - **Files:** `src/legacy/LegacySimpleForm.test.jsx`
 - **Do:** wrap `LegacySimpleForm` in `<Profiler id="legacy" onRender={…}>`. Type a prefix that is still invalid (e.g. `ab`), **reset the counter**, then type **one** character that flips the field from invalid to valid (`c`) — the waterfall only fully cascades when the error actually changes. Assert `commits >= 3` and log the exact number with `console.info` (recorded in T21). Characterisation test: GREEN. *(Kit smoke test measured 4 commits for this keystroke vs 1 for the derived engine.)*
 
